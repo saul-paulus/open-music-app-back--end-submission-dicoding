@@ -36,6 +36,6 @@ const addMusicHandler = (request, h) => {
   return response
 }
 
-module.export = {
+module.exports = {
   addMusicHandler
 }
