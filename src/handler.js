@@ -36,6 +36,94 @@ const addMusicHandler = (request, h) => {
   return response
 }
 
+const getAllMusicsHandler = () => ({
+  status: 'success',
+  data: {
+    musics
+  }
+})
+
+const getMusicByIdHandler = (request, h) => {
+  const { songId } = request.params
+
+  const music = musics.filter(music => music.id === songId)[0]
+
+  if (music !== undefined) {
+    return {
+      status: 'success',
+      data: {
+        music
+      }
+    }
+  }
+
+  const response = h.response({
+    status: 'fail',
+    message: 'lagu gagal ditemukan'
+  })
+  response.code(404)
+  return response
+}
+
+const editMusicByIdHandler = (request, h) => {
+  const { songId } = request.params
+  const { title, year, performer, genre, duration } = request.payload
+  const updatedAt = new Date().toISOString()
+
+  const index = musics.findIndex(music => music.id === songId)
+
+  if (index !== -1) {
+    musics[index] = {
+      ...musics[index],
+      title,
+      year,
+      performer,
+      genre,
+      duration,
+      updatedAt
+    }
+    const response = h.response({
+      status: 'success',
+      message: 'Lagu berhasil diperbaharui'
+    })
+    response.code(200)
+    return response
+  }
+
+  const response = h.response({
+    status: 'fail',
+    message: 'Gagal memperbaharui lagu, Id tidak ditemukan'
+  })
+  response.code(404)
+  return response
+}
+
+const deleteMusicByIdHandler = (request, h) => {
+  const { songId } = request.params
+
+  const index = musics.findIndex(music => music.id === songId)
+
+  if (index !== -1) {
+    musics.splice(index, 1)
+    const response = h.response({
+      status: 'success',
+      message: 'Lagu berhasil dihapus'
+    })
+    response.code(200)
+    return response
+  }
+  const response = h.response({
+    status: 'fail',
+    message: 'Lagu gagal dihapus, Id tidak ditemukan'
+  })
+  response.code(404)
+  return response
+}
+
 module.exports = {
-  addMusicHandler
+  addMusicHandler,
+  getAllMusicsHandler,
+  getMusicByIdHandler,
+  editMusicByIdHandler,
+  deleteMusicByIdHandler
 }
