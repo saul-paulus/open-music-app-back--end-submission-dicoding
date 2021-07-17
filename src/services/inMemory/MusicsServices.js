@@ -22,6 +22,49 @@ class MusicService {
 
     return id
   }
+
+  getMusics () {
+    return this._musics
+  }
+
+  getMusicById (songId) {
+    const music = this._musics.filter(music => music.id === songId)[0]
+
+    if (!music) {
+      throw new Error('Lagu tidak ditemukan')
+    }
+    return music
+  }
+
+  editMusicById (songId, { title, year, performer, genre, duration }) {
+    const index = this._musics.filter(music => music.id === songId)
+
+    if (index === -1) {
+      throw new Error('Gagal memperbaharui lagu, Id tidak ditemukan')
+    }
+
+    const updatedAt = new Date().toISOString()
+
+    this._musics[index] = {
+      ...this._musics[index],
+      title,
+      year,
+      performer,
+      genre,
+      duration,
+      updatedAt
+    }
+  }
+
+  deleteMusicById (songId) {
+    const index = this._musics.findIndex(music => music.id === songId)
+
+    if (index === -1) {
+      throw new Error('Lagu gagal dihapus, Id tidak ditemukan')
+    }
+
+    this._musics.splice(index, 1)
+  }
 }
 
 module.exports = MusicService
