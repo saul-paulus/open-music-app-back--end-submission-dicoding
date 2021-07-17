@@ -6,7 +6,7 @@ class MusicHandler {
     this._validator = validator
 
     this.postMusicHandler = this.postMusicHandler.bind(this)
-    this.getMusicsHandler = this.getMusicsHandler.bind(this)
+    this.getAllMusicsHandler = this.getAllMusicsHandler.bind(this)
     this.getMusicByIdHandler = this.getMusicByIdHandler.bind(this)
     this.putMusicByIdHandler = this.putMusicByIdHandler.bind(this)
     this.deleteMusicByIdHandler = this.deleteMusicByIdHandler.bind(this)
@@ -50,7 +50,7 @@ class MusicHandler {
     }
   }
 
-  getMusicsHandler () {
+  getAllMusicsHandler () {
     const musics = this._service.getMusics()
     return {
       status: 'success',
