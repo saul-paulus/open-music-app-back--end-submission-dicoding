@@ -12,7 +12,7 @@ class MusicHandler {
     this.deleteMusicByIdHandler = this.deleteMusicByIdHandler.bind(this)
   }
 
-  postMusicHandler (request, h) {
+  async postMusicHandler (request, h) {
     try {
       this._validator.validateMusicPayload(request.payload)
       const { title = 'untitled', year, performer, genre, duration } = request.payload
@@ -50,7 +50,7 @@ class MusicHandler {
     }
   }
 
-  getAllMusicsHandler () {
+  async getAllMusicsHandler () {
     const musics = this._service.getMusics()
     return {
       status: 'success',
@@ -60,7 +60,7 @@ class MusicHandler {
     }
   }
 
-  getMusicByIdHandler (request, h) {
+  async getMusicByIdHandler (request, h) {
     try {
       const { songId } = request.params
       const music = this._service.getMusicById(songId)
@@ -93,12 +93,12 @@ class MusicHandler {
     }
   }
 
-  putMusicByIdHandler (request, h) {
+  async putMusicByIdHandler (request, h) {
     try {
       this._validator.validateMusicPayload(request.payload)
       const { songId } = request.params
 
-      this._service.editMusicById(songId, request.payload)
+      await this._service.editMusicById(songId, request.payload)
 
       return {
         status: 'success',
@@ -124,7 +124,7 @@ class MusicHandler {
     }
   }
 
-  deleteMusicByIdHandler (request, h) {
+  async deleteMusicByIdHandler (request, h) {
     try {
       const { songId } = request.params
       this._service.deleteMusicById(songId)
