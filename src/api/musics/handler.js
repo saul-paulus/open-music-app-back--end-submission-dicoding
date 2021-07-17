@@ -1,6 +1,9 @@
+const ClientError = require('../../exceptions/ClientError')
+
 class MusicHandler {
-  constructor (service) {
+  constructor (service, validator) {
     this._service = service
+    this._validator = validator
 
     this.postMusicHandler = this.postMusicHandler.bind(this)
     this.getMusicsHandler = this.getMusicsHandler.bind(this)
@@ -11,6 +14,7 @@ class MusicHandler {
 
   postMusicHandler (request, h) {
     try {
+      this._validator.validateMusicPayload(request.payload)
       const { title = 'untitled', year, performer, genre, duration } = request.payload
 
       const songId = this._service.addMusic({ title, year, performer, genre, duration })
@@ -27,11 +31,21 @@ class MusicHandler {
       response.code(201)
       return response
     } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message
+        })
+        response.code(error.statusCode)
+        return response
+      }
+      // server error
       const response = h.response({
-        status: 'fail',
-        message: error.message
+        status: 'error',
+        message: 'maaf, terjadi kegagalan pada server kami'
       })
-      response.code(400)
+      response.code(500)
+      console.error(error)
       return response
     }
   }
@@ -58,18 +72,30 @@ class MusicHandler {
         }
       }
     } catch (error) {
-      const response = h.response({
-        status: 'fail',
-        message: error.message
-      })
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message
+        })
 
-      response.code(404)
+        response.code(error.statusCode)
+        return response
+      }
+
+      // server error
+      const response = h.response({
+        status: 'error',
+        message: 'maaf, terjadi kegagalan pada server kami'
+      })
+      response.code(500)
+      console.error(error)
       return response
     }
   }
 
   putMusicByIdHandler (request, h) {
     try {
+      this._validator.validateMusicPayload(request.payload)
       const { songId } = request.params
 
       this._service.editMusicById(songId, request.payload)
@@ -79,11 +105,21 @@ class MusicHandler {
         message: 'Lagu berhasil diperbaharui'
       }
     } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message
+        })
+        response.code(error.statusCode)
+        return response
+      }
+      // server error
       const response = h.response({
-        status: 'fail',
-        message: error.message
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.'
       })
-      response.code(404)
+      response.code(500)
+      console.error(error)
       return response
     }
   }
@@ -91,18 +127,28 @@ class MusicHandler {
   deleteMusicByIdHandler (request, h) {
     try {
       const { songId } = request.params
-
       this._service.deleteMusicById(songId)
+
       return {
         status: 'success',
         message: 'Lagu berhasil dihapus'
       }
     } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message
+        })
+        response.code(error.statusCode)
+        return response
+      }
+      // server error
       const response = h.response({
-        status: 'fail',
-        message: 'Lagu gagal dihapus, Id tidak ditemukan'
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.'
       })
-      response.code(404)
+      response.code(500)
+      console.error(error)
       return response
     }
   }
